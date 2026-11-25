@@ -1,0 +1,28 @@
+.demo-box {
+  background: #fffaf5;
+  border: 1px dashed var(--line);
+  border-radius: 14px;
+  padding: 0.9rem 1rem;
+}
+
+.demo-btn {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.75rem;
+  width: 100%;
+  border: 1px solid var(--line);
+  background: #fff;
+  border-radius: 10px;
+  padding: 0.45rem 0.7rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-align: left;
+}
+
+.demo-btn:hover {
+  border-color: var(--brand);
+}
+
+.demo-btn .text-muted-2 {
+  font-weight: 500;
+}

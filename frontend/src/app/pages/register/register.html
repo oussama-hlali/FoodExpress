@@ -1,0 +1,108 @@
+<div class="auth-shell">
+  <aside class="auth-aside">
+    <img src="/images/tunisien.jpg" alt="Cuisine tunisienne" />
+    <div class="auth-aside-content">
+      <h2 class="h3 text-white mb-2">Rejoignez FoodExpress</h2>
+      <p class="mb-0 text-white-50">
+        Créez votre compte gratuitement et commandez auprès des meilleurs restaurants partenaires.
+      </p>
+    </div>
+  </aside>
+
+  <section class="auth-panel">
+    <div class="auth-card">
+      <h1 class="h3 mb-1">Créer un compte</h1>
+      <p class="text-muted-2 small mb-4">Tous les champs sont obligatoires. Votre compte sera un compte client.</p>
+
+      <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
+        <div class="row g-3">
+          <div class="col-sm-6">
+            <label class="form-label" for="prenom">Prénom</label>
+            <input id="prenom" class="form-control" formControlName="prenom" [class.is-invalid]="invalid('prenom')" />
+            @if (invalid('prenom')) {
+              <div class="small text-danger mt-1">Le prénom est obligatoire.</div>
+            }
+          </div>
+          <div class="col-sm-6">
+            <label class="form-label" for="nom">Nom</label>
+            <input id="nom" class="form-control" formControlName="nom" [class.is-invalid]="invalid('nom')" />
+            @if (invalid('nom')) {
+              <div class="small text-danger mt-1">Le nom est obligatoire.</div>
+            }
+          </div>
+
+          <div class="col-12">
+            <label class="form-label" for="email">Adresse email</label>
+            <input id="email" type="email" class="form-control" formControlName="email" [class.is-invalid]="invalid('email')" />
+            @if (invalid('email')) {
+              <div class="small text-danger mt-1">Adresse email invalide.</div>
+            }
+          </div>
+
+          <div class="col-12">
+            <label class="form-label" for="telephone">Téléphone</label>
+            <input id="telephone" type="tel" class="form-control" formControlName="telephone" placeholder="22123456" [class.is-invalid]="invalid('telephone')" />
+            @if (invalid('telephone')) {
+              <div class="small text-danger mt-1">Numéro de téléphone invalide (8 à 15 chiffres).</div>
+            }
+          </div>
+
+          <div class="col-sm-6">
+            <label class="form-label" for="password">Mot de passe</label>
+            <div class="position-relative">
+              <input
+                id="password"
+                [type]="showPassword() ? 'text' : 'password'"
+                class="form-control pe-5"
+                formControlName="password"
+                [class.is-invalid]="invalid('password')"
+              />
+              <button
+                class="position-absolute end-0 top-50 translate-middle-y btn btn-link text-muted-2"
+                type="button"
+                (click)="showPassword.set(!showPassword())"
+                aria-label="Afficher le mot de passe"
+              >
+                <i class="bi" [class.bi-eye]="!showPassword()" [class.bi-eye-slash]="showPassword()"></i>
+              </button>
+            </div>
+            @if (invalid('password')) {
+              <div class="small text-danger mt-1">8 caractères minimum, avec une lettre et un chiffre.</div>
+            }
+          </div>
+
+          <div class="col-sm-6">
+            <label class="form-label" for="confirm">Confirmation</label>
+            <input
+              id="confirm"
+              [type]="showPassword() ? 'text' : 'password'"
+              class="form-control"
+              formControlName="confirmPassword"
+              [class.is-invalid]="invalid('confirmPassword') || (form.touched && form.hasError('mismatch'))"
+            />
+            @if (form.hasError('mismatch') && form.controls.confirmPassword.touched) {
+              <div class="small text-danger mt-1">Les mots de passe ne correspondent pas.</div>
+            }
+          </div>
+        </div>
+
+        @if (error()) {
+          <div class="alert alert-danger small py-2 mt-3">{{ error() }}</div>
+        }
+
+        <button class="btn btn-brand w-100 mt-4" type="submit" [disabled]="loading()">
+          @if (loading()) {
+            <span class="spinner-border spinner-border-sm me-2"></span> Création...
+          } @else {
+            Créer mon compte
+          }
+        </button>
+      </form>
+
+      <p class="text-center small mt-4 mb-0">
+        Déjà inscrit ?
+        <a class="fw-bold text-brand" routerLink="/login">Se connecter</a>
+      </p>
+    </div>
+  </section>
+</div>

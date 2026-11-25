@@ -1,0 +1,98 @@
+<div class="auth-shell">
+  <aside class="auth-aside">
+    <img src="/images/hero.jpg" alt="Plats FoodExpress" />
+    <div class="auth-aside-content">
+      <h2 class="h3 text-white mb-2">Bon retour sur FoodExpress</h2>
+      <p class="mb-0 text-white-50">
+        Retrouvez vos restaurants favoris, suivez vos commandes et régalez-vous en quelques clics.
+      </p>
+    </div>
+  </aside>
+
+  <section class="auth-panel">
+    <div class="auth-card">
+      <h1 class="h3 mb-1">Connexion</h1>
+      <p class="text-muted-2 small mb-4">
+        Accédez à votre espace client, restaurateur ou administrateur.
+      </p>
+
+      <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
+        <div class="mb-3">
+          <label class="form-label" for="email">Adresse email</label>
+          <div class="input-icon">
+            <i class="bi bi-envelope"></i>
+            <input
+              id="email"
+              type="email"
+              class="form-control"
+              formControlName="email"
+              placeholder="vous@exemple.com"
+              autocomplete="email"
+            />
+          </div>
+          @if (form.controls.email.touched && form.controls.email.invalid) {
+            <div class="small text-danger mt-1">Une adresse email valide est obligatoire.</div>
+          }
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label" for="password">Mot de passe</label>
+          <div class="input-icon">
+            <i class="bi bi-lock"></i>
+            <input
+              id="password"
+              [type]="showPassword() ? 'text' : 'password'"
+              class="form-control pe-5"
+              formControlName="password"
+              placeholder="••••••••"
+              autocomplete="current-password"
+            />
+            <button
+              class="position-absolute end-0 top-50 translate-middle-y btn btn-link text-muted-2"
+              type="button"
+              (click)="showPassword.set(!showPassword())"
+              aria-label="Afficher le mot de passe"
+            >
+              <i class="bi" [class.bi-eye]="!showPassword()" [class.bi-eye-slash]="showPassword()"></i>
+            </button>
+          </div>
+          @if (form.controls.password.touched && form.controls.password.invalid) {
+            <div class="small text-danger mt-1">Le mot de passe est obligatoire.</div>
+          }
+        </div>
+
+        @if (error()) {
+          <div class="alert alert-danger small py-2">{{ error() }}</div>
+        }
+
+        <button class="btn btn-brand w-100" type="submit" [disabled]="loading()">
+          @if (loading()) {
+            <span class="spinner-border spinner-border-sm me-2"></span> Connexion...
+          } @else {
+            Se connecter
+          }
+        </button>
+      </form>
+
+      <p class="text-center small mt-4 mb-0">
+        Pas encore de compte ?
+        <a class="fw-bold text-brand" routerLink="/register">Créer un compte</a>
+      </p>
+
+      <div class="demo-box mt-4">
+        <div class="small fw-bold mb-2"><i class="bi bi-info-circle me-1"></i> Comptes de démonstration</div>
+        <div class="d-grid gap-2">
+          <button type="button" class="demo-btn" (click)="fillDemo('client@foodexpress.tn', 'Client1234')">
+            <span>Client</span><span class="text-muted-2">client&#64;foodexpress.tn / Client1234</span>
+          </button>
+          <button type="button" class="demo-btn" (click)="fillDemo('resto@foodexpress.tn', 'Resto1234')">
+            <span>Restaurateur</span><span class="text-muted-2">resto&#64;foodexpress.tn / Resto1234</span>
+          </button>
+          <button type="button" class="demo-btn" (click)="fillDemo('admin@foodexpress.tn', 'Admin1234')">
+            <span>Administrateur</span><span class="text-muted-2">admin&#64;foodexpress.tn / Admin1234</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
