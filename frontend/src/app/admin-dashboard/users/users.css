@@ -1,0 +1,13 @@
+.pagination .page-link {
+  border: 1px solid var(--line);
+  color: var(--ink);
+  font-weight: 600;
+  margin: 0 2px;
+  border-radius: 10px;
+}
+
+.pagination .page-item.active .page-link {
+  background: var(--brand);
+  border-color: var(--brand);
+  color: #fff;
+}

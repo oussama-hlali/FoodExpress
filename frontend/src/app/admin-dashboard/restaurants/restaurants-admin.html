@@ -1,0 +1,188 @@
+<div class="card-soft p-3 p-lg-4 mb-4">
+  <div class="panel-head mb-0">
+    <div>
+      <h2 class="h5 mb-1">Restaurants partenaires</h2>
+      <p class="small text-muted-2 mb-0">{{ meta().total }} restaurant(s) sur la plateforme.</p>
+    </div>
+    <div class="d-flex gap-2 flex-wrap">
+      <input class="form-control w-auto" placeholder="Rechercher un restaurant" [(ngModel)]="q" (keyup.enter)="search()" />
+      <select class="form-select w-auto" [(ngModel)]="statutFilter" (change)="search()" aria-label="Filtrer par statut">
+        <option value="">Tous les statuts</option>
+        <option value="valide">Validés</option>
+        <option value="en_attente">En attente</option>
+        <option value="suspendu">Suspendus</option>
+      </select>
+      <button class="btn btn-brand btn-sm" type="button" (click)="openCreate()">
+        <i class="bi bi-plus-lg me-1"></i> Ajouter
+      </button>
+    </div>
+  </div>
+</div>
+
+@if (showForm()) {
+  <div class="card-soft p-3 p-lg-4 mb-4 form-panel">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <h3 class="h6 mb-0">{{ editing() ? 'Modifier le restaurant' : 'Ajouter un restaurant' }}</h3>
+      <button class="btn btn-icon" type="button" (click)="cancelForm()" aria-label="Fermer">
+        <i class="bi bi-x-lg"></i>
+      </button>
+    </div>
+
+    <form [formGroup]="form" (ngSubmit)="save()" novalidate>
+      <div class="row g-3">
+        <div class="col-md-6">
+          <label class="form-label" for="nom">Nom *</label>
+          <input id="nom" class="form-control" formControlName="nom" />
+        </div>
+        <div class="col-md-6">
+          <label class="form-label" for="adresse">Adresse *</label>
+          <input id="adresse" class="form-control" formControlName="adresse" />
+        </div>
+        <div class="col-12">
+          <label class="form-label" for="description">Description *</label>
+          <textarea id="description" class="form-control" rows="2" formControlName="description"></textarea>
+        </div>
+        <div class="col-md-4">
+          <label class="form-label" for="cuisine">Type de cuisine *</label>
+          <select id="cuisine" class="form-select" formControlName="typeCuisine">
+            @for (cuisine of cuisines(); track cuisine._id) {
+              <option [value]="cuisine.nom">{{ cuisine.nom }}</option>
+            }
+          </select>
+        </div>
+        <div class="col-md-4">
+          <label class="form-label" for="frais">Frais de livraison (DT) *</label>
+          <input id="frais" type="number" min="0" step="0.5" class="form-control" formControlName="fraisLivraison" />
+        </div>
+        <div class="col-md-4">
+          <label class="form-label" for="horaires">Horaires</label>
+          <input id="horaires" class="form-control" formControlName="horaires" placeholder="10:00 - 23:00" />
+        </div>
+        <div class="col-md-4">
+          <label class="form-label" for="owner">Restaurateur *</label>
+          <select id="owner" class="form-select" formControlName="owner">
+            @for (owner of owners(); track owner._id) {
+              <option [value]="owner._id">{{ owner.prenom }} {{ owner.nom }}</option>
+            }
+          </select>
+          @if (!owners().length) {
+            <div class="small text-danger mt-1">Aucun restaurateur disponible.</div>
+          }
+        </div>
+        <div class="col-md-4">
+          <label class="form-label" for="statut">Statut</label>
+          <select id="statut" class="form-select" formControlName="statut">
+            <option value="valide">Validé</option>
+            <option value="en_attente">En attente</option>
+            <option value="suspendu">Suspendu</option>
+          </select>
+        </div>
+        <div class="col-md-4 d-flex align-items-end">
+          <div class="form-check form-switch">
+            <input class="form-check-input" type="checkbox" id="isOpen" formControlName="isOpen" />
+            <label class="form-check-label small fw-semibold" for="isOpen">Ouvert</label>
+          </div>
+        </div>
+        <div class="col-12">
+          <label class="form-label" for="image">Image (chemin ou URL)</label>
+          <input id="image" class="form-control" formControlName="image" placeholder="/images/pizza.jpg" />
+        </div>
+      </div>
+
+      <div class="d-flex gap-2 mt-4">
+        <button class="btn btn-brand" type="submit" [disabled]="saving()">
+          @if (saving()) {
+            <span class="spinner-border spinner-border-sm me-2"></span> Enregistrement...
+          } @else {
+            {{ editing() ? 'Enregistrer' : 'Créer le restaurant' }}
+          }
+        </button>
+        <button class="btn btn-ghost" type="button" (click)="cancelForm()">Annuler</button>
+      </div>
+    </form>
+  </div>
+}
+
+<div class="card-soft p-3 p-lg-4">
+  @if (loading()) {
+    <div class="placeholder-glow">
+      <span class="placeholder col-12 mb-2" style="height: 46px; border-radius: 10px"></span>
+      <span class="placeholder col-12" style="height: 46px; border-radius: 10px"></span>
+    </div>
+  } @else if (!restaurants().length) {
+    <div class="empty-state">
+      <i class="bi bi-shop"></i>
+      <p class="mt-2 mb-0 fw-bold">Aucun restaurant trouvé</p>
+    </div>
+  } @else {
+    <div class="admin-table-wrap">
+      <table class="table-clean">
+        <thead>
+          <tr>
+            <th>Restaurant</th>
+            <th>Cuisine</th>
+            <th>Restaurateur</th>
+            <th>Livraison</th>
+            <th>Statut</th>
+            <th class="text-end">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (restaurant of restaurants(); track restaurant._id) {
+            <tr>
+              <td>
+                <div class="d-flex align-items-center gap-2">
+                  <img class="resto-thumb" [src]="restaurant.image || '/images/hero.jpg'" [alt]="restaurant.nom" />
+                  <div>
+                    <div class="fw-semibold">{{ restaurant.nom }}</div>
+                    <div class="small text-muted-2">{{ restaurant.adresse }}</div>
+                  </div>
+                </div>
+              </td>
+              <td class="small">{{ restaurant.typeCuisine }}</td>
+              <td class="small">{{ ownerName(restaurant) }}</td>
+              <td class="small">{{ restaurant.fraisLivraison | number: '1.2-2' }} DT</td>
+              <td>
+                <span class="badge-soft" [class]="statusClass(restaurant.statut)">
+                  {{ statusLabel(restaurant.statut) }}
+                </span>
+              </td>
+              <td class="text-end">
+                <div class="d-flex gap-1 justify-content-end flex-wrap">
+                  @if (restaurant.statut !== 'valide') {
+                    <button class="btn btn-sm btn-ghost" type="button" (click)="setStatus(restaurant, 'valide')">
+                      Valider
+                    </button>
+                  }
+                  @if (restaurant.statut !== 'suspendu') {
+                    <button class="btn btn-sm btn-ghost" type="button" (click)="setStatus(restaurant, 'suspendu')">
+                      Suspendre
+                    </button>
+                  }
+                  <button class="btn btn-icon" type="button" (click)="openEdit(restaurant)" aria-label="Modifier">
+                    <i class="bi bi-pencil"></i>
+                  </button>
+                  <button class="btn btn-icon" type="button" (click)="remove(restaurant)" aria-label="Supprimer">
+                    <i class="bi bi-trash text-danger"></i>
+                  </button>
+                </div>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+    @if (meta().pages > 1) {
+      <nav class="d-flex justify-content-center mt-4">
+        <ul class="pagination mb-0">
+          @for (page of pages(); track page) {
+            <li class="page-item" [class.active]="page === meta().page">
+              <button class="page-link" type="button" (click)="load(page)">{{ page }}</button>
+            </li>
+          }
+        </ul>
+      </nav>
+    }
+  }
+</div>

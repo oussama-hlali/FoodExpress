@@ -1,0 +1,107 @@
+<div class="card-soft p-3 p-lg-4">
+  <div class="panel-head">
+    <div>
+      <h2 class="h5 mb-1">Utilisateurs</h2>
+      <p class="small text-muted-2 mb-0">{{ meta().total }} compte(s) enregistré(s) sur la plateforme.</p>
+    </div>
+    <div class="d-flex gap-2 flex-wrap">
+      <div class="input-icon">
+        <i class="bi bi-search"></i>
+        <input class="form-control" placeholder="Nom, prénom ou email" [(ngModel)]="q" (keyup.enter)="search()" />
+      </div>
+      <select class="form-select w-auto" [(ngModel)]="role" (change)="search()" aria-label="Filtrer par rôle">
+        <option value="">Tous les rôles</option>
+        <option value="client">Clients</option>
+        <option value="restaurateur">Restaurateurs</option>
+        <option value="admin">Administrateurs</option>
+      </select>
+      <button class="btn btn-brand btn-sm" type="button" (click)="search()">Rechercher</button>
+    </div>
+  </div>
+
+  @if (loading()) {
+    <div class="placeholder-glow">
+      <span class="placeholder col-12 mb-2" style="height: 46px; border-radius: 10px"></span>
+      <span class="placeholder col-12" style="height: 46px; border-radius: 10px"></span>
+    </div>
+  } @else if (!users().length) {
+    <div class="empty-state">
+      <i class="bi bi-people"></i>
+      <p class="mt-2 mb-0 fw-bold">Aucun utilisateur trouvé</p>
+    </div>
+  } @else {
+    <div class="admin-table-wrap">
+      <table class="table-clean">
+        <thead>
+          <tr>
+            <th>Utilisateur</th>
+            <th>Contact</th>
+            <th>Rôle</th>
+            <th>Inscription</th>
+            <th>Compte</th>
+            <th class="text-end">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (user of users(); track user._id) {
+            <tr>
+              <td>
+                <div class="d-flex align-items-center gap-2">
+                  <span class="avatar" style="width: 34px; height: 34px; font-size: 0.75rem">
+                    {{ user.prenom.charAt(0) }}{{ user.nom.charAt(0) }}
+                  </span>
+                  <div>
+                    <div class="fw-semibold">{{ user.prenom }} {{ user.nom }}</div>
+                    <div class="small text-muted-2">{{ user.email }}</div>
+                  </div>
+                </div>
+              </td>
+              <td class="small">{{ user.telephone }}</td>
+              <td>
+                <select
+                  class="form-select form-select-sm w-auto"
+                  [ngModel]="user.role"
+                  (ngModelChange)="changeRole(user, $event)"
+                  [attr.aria-label]="'Rôle de ' + user.prenom"
+                >
+                  <option value="client">Client</option>
+                  <option value="restaurateur">Restaurateur</option>
+                  <option value="admin">Admin</option>
+                </select>
+              </td>
+              <td class="small">{{ user.createdAt | date: 'dd/MM/yyyy' }}</td>
+              <td>
+                <span class="badge-soft" [class.badge-open]="user.isActive" [class.badge-closed]="!user.isActive">
+                  {{ user.isActive ? 'Actif' : 'Désactivé' }}
+                </span>
+              </td>
+              <td class="text-end">
+                <button
+                  class="btn btn-sm"
+                  [class.btn-outline-danger]="user.isActive"
+                  [class.btn-ghost]="!user.isActive"
+                  type="button"
+                  (click)="toggleStatus(user)"
+                >
+                  {{ user.isActive ? 'Désactiver' : 'Activer' }}
+                </button>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+    @if (meta().pages > 1) {
+      <nav class="d-flex justify-content-center mt-4">
+        <ul class="pagination mb-0">
+          @for (page of pages(); track page) {
+            <li class="page-item" [class.active]="page === meta().page">
+              <button class="page-link" type="button" (click)="load(page)">{{ page }}</button>
+            </li>
+          }
+        </ul>
+      </nav>
+    }
+  }
+</div>
