@@ -1,0 +1,147 @@
+@if (loading()) {
+  <div class="card-soft p-4 placeholder-glow">
+    <span class="placeholder col-12 mb-3" style="height: 80px; border-radius: 12px"></span>
+    <span class="placeholder col-12" style="height: 160px; border-radius: 12px"></span>
+  </div>
+} @else if (stats(); as data) {
+  <div class="row g-3 mb-4">
+    <div class="col-sm-6 col-xl-3">
+      <div class="card-soft stat-card">
+        <span class="stat-icon"><i class="bi bi-people"></i></span>
+        <div>
+          <div class="stat-value">{{ data.clients }}</div>
+          <div class="stat-label">Clients</div>
+        </div>
+      </div>
+    </div>
+    <div class="col-sm-6 col-xl-3">
+      <div class="card-soft stat-card">
+        <span class="stat-icon" style="background: var(--blue-soft); color: var(--blue)">
+          <i class="bi bi-shop"></i>
+        </span>
+        <div>
+          <div class="stat-value">{{ data.restaurants }}</div>
+          <div class="stat-label">Restaurants</div>
+        </div>
+      </div>
+    </div>
+    <div class="col-sm-6 col-xl-3">
+      <div class="card-soft stat-card">
+        <span class="stat-icon" style="background: var(--amber-soft); color: var(--amber)">
+          <i class="bi bi-receipt"></i>
+        </span>
+        <div>
+          <div class="stat-value">{{ data.orders }}</div>
+          <div class="stat-label">Commandes</div>
+        </div>
+      </div>
+    </div>
+    <div class="col-sm-6 col-xl-3">
+      <div class="card-soft stat-card">
+        <span class="stat-icon" style="background: var(--green-soft); color: var(--green)">
+          <i class="bi bi-cash-stack"></i>
+        </span>
+        <div>
+          <div class="stat-value">{{ data.revenue | number: '1.2-2' }} DT</div>
+          <div class="stat-label">Chiffre d’affaires</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  @if (data.pendingRestaurants > 0) {
+    <div class="alert alert-warning d-flex justify-content-between align-items-center flex-wrap gap-2">
+      <span>
+        <i class="bi bi-exclamation-triangle me-2"></i>
+        {{ data.pendingRestaurants }} restaurant(s) en attente de validation.
+      </span>
+      <a routerLink="/admin/restaurants" class="btn btn-sm btn-brand">Traiter maintenant</a>
+    </div>
+  }
+
+  <div class="row g-4">
+    <div class="col-lg-5">
+      <div class="card-soft p-4 h-100">
+        <h2 class="h5 mb-3"><i class="bi bi-pie-chart me-2"></i>Commandes par statut</h2>
+
+        @if (statuses().length) {
+          <div class="d-grid gap-3">
+            @for (row of statuses(); track row.statut) {
+              <div>
+                <div class="d-flex justify-content-between small fw-semibold mb-1">
+                  <span>{{ label(row.statut) }}</span>
+                  <span>{{ row.count }} · {{ percent(row.statut) }}%</span>
+                </div>
+                <div class="progress" style="height: 8px">
+                  <div class="progress-bar" style="background: var(--brand)" [style.width.%]="percent(row.statut)"></div>
+                </div>
+              </div>
+            }
+          </div>
+        } @else {
+          <p class="small text-muted-2 mb-0">Aucune commande enregistrée.</p>
+        }
+
+        <div class="divider"></div>
+        <div class="row text-center g-2">
+          <div class="col-6">
+            <div class="mini-stat border rounded-3">
+              <div class="label">Restaurateurs</div>
+              <div class="value">{{ data.restaurateurs }}</div>
+            </div>
+          </div>
+          <div class="col-6">
+            <div class="mini-stat border rounded-3">
+              <div class="label">En attente</div>
+              <div class="value">{{ data.ordersByStatus['en_attente'] ?? 0 }}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-lg-7">
+      <div class="card-soft p-4 h-100">
+        <div class="panel-head">
+          <h2 class="h5 mb-0"><i class="bi bi-clock-history me-2"></i>Dernières commandes</h2>
+          <a routerLink="/admin/restaurants" class="small fw-bold text-brand">Gérer les restaurants</a>
+        </div>
+
+        @if (data.recentOrders.length) {
+          <div class="admin-table-wrap">
+            <table class="table-clean">
+              <thead>
+                <tr>
+                  <th>Commande</th>
+                  <th>Client</th>
+                  <th>Restaurant</th>
+                  <th>Statut</th>
+                  <th class="text-end">Total</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (order of data.recentOrders; track order._id) {
+                  <tr>
+                    <td>
+                      <div class="fw-semibold small">#{{ order._id.slice(-6).toUpperCase() }}</div>
+                      <div class="small text-muted-2">{{ order.createdAt | date: 'dd/MM HH:mm' }}</div>
+                    </td>
+                    <td class="small">{{ order.client?.prenom }} {{ order.client?.nom }}</td>
+                    <td class="small">{{ order.restaurant?.nom }}</td>
+                    <td><span class="badge-soft badge-neutral">{{ labels[order.statut] }}</span></td>
+                    <td class="text-end fw-bold small">{{ order.total | number: '1.2-2' }} DT</td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        } @else {
+          <div class="empty-state py-4">
+            <i class="bi bi-inbox"></i>
+            <p class="small mt-2 mb-0">Aucune commande enregistrée.</p>
+          </div>
+        }
+      </div>
+    </div>
+  </div>
+}

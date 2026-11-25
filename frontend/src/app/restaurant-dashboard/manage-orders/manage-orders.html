@@ -1,0 +1,122 @@
+<div class="card-soft p-3 p-lg-4">
+  <div class="panel-head">
+    <div>
+      <h2 class="h5 mb-1">Commandes reçues</h2>
+      <p class="small text-muted-2 mb-0">Acceptez, refusez et faites évoluer le statut des commandes.</p>
+    </div>
+    <select class="form-select w-auto" [(ngModel)]="statusFilter" (change)="filterChanged()" aria-label="Filtrer les commandes">
+      <option value="">Tous les statuts</option>
+      @for (entry of labels | keyvalue; track entry.key) {
+        <option [value]="entry.key">{{ entry.value }}</option>
+      }
+    </select>
+  </div>
+
+  @if (loading()) {
+    <div class="placeholder-glow">
+      <span class="placeholder col-12 mb-2" style="height: 70px; border-radius: 12px"></span>
+      <span class="placeholder col-12" style="height: 70px; border-radius: 12px"></span>
+    </div>
+  } @else if (!orders().length) {
+    <div class="empty-state">
+      <i class="bi bi-inbox"></i>
+      <p class="mt-2 mb-0 fw-bold">Aucune commande pour ce filtre</p>
+    </div>
+  } @else {
+    <div class="d-grid gap-3">
+      @for (order of orders(); track order._id) {
+        <article class="order-box">
+          <div class="d-flex justify-content-between align-items-start gap-3 flex-wrap">
+            <div>
+              <div class="fw-bold">
+                #{{ order._id.slice(-6).toUpperCase() }}
+                <span class="badge-soft ms-2" [class]="statusClass(order.statut)">{{ labels[order.statut] }}</span>
+              </div>
+              <div class="small text-muted-2 mt-1">
+                {{ order.client?.prenom }} {{ order.client?.nom }} · {{ order.client?.telephone }} ·
+                {{ order.createdAt | date: 'dd/MM/yyyy HH:mm' }}
+              </div>
+              <div class="small text-muted-2">
+                <i class="bi bi-geo-alt me-1"></i>{{ order.adresseLivraison }}
+              </div>
+            </div>
+            <div class="text-end">
+              <div class="fw-bold fs-5">{{ order.total | number: '1.2-2' }} DT</div>
+              <div class="small text-muted-2">{{ order.articles.length }} ligne(s)</div>
+            </div>
+          </div>
+
+          <div class="mt-2 small">
+            @for (item of order.articles; track item.plat) {
+              <span class="item-chip">{{ item.quantite }} × {{ item.nom }}</span>
+            }
+          </div>
+
+          @if (order.remarque) {
+            <div class="alert alert-warning small py-2 px-3 mt-3 mb-0">
+              <i class="bi bi-chat-left-text me-1"></i>{{ order.remarque }}
+            </div>
+          }
+
+          <div class="d-flex justify-content-between align-items-center gap-2 flex-wrap mt-3">
+            <button class="btn btn-ghost btn-sm" type="button" (click)="toggle(order._id)">
+              {{ expanded() === order._id ? 'Masquer' : 'Détails client' }}
+            </button>
+
+            <div class="d-flex gap-2">
+              @if (order.statut === 'en_attente') {
+                <button class="btn btn-outline-danger btn-sm rounded-pill" type="button" (click)="refuse(order)">
+                  Refuser
+                </button>
+                <button class="btn btn-brand btn-sm" type="button" (click)="accept(order)">
+                  <i class="bi bi-check2 me-1"></i> Accepter
+                </button>
+              } @else {
+                @if (nextAction(order); as action) {
+                  <button class="btn btn-brand btn-sm" type="button" (click)="advance(order)">
+                    <i class="bi" [class]="action.icon" style="margin-right: 4px"></i>{{ action.label }}
+                  </button>
+                }
+              }
+            </div>
+          </div>
+
+          @if (expanded() === order._id) {
+            <div class="order-detail-box mt-3">
+              <div class="row g-3">
+                <div class="col-md-6">
+                  <div class="small fw-bold mb-1">Client</div>
+                  <div class="small text-muted-2">
+                    {{ order.client?.prenom }} {{ order.client?.nom }}<br />
+                    {{ order.client?.email }}<br />
+                    {{ order.telephone }}
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="small fw-bold mb-1">Paiement</div>
+                  <div class="small text-muted-2">
+                    {{ order.modePaiement === 'livraison' ? 'À la livraison' : 'En ligne' }}<br />
+                    Sous-total : {{ order.sousTotal | number: '1.2-2' }} DT<br />
+                    Livraison : {{ order.fraisLivraison | number: '1.2-2' }} DT
+                  </div>
+                </div>
+              </div>
+            </div>
+          }
+        </article>
+      }
+    </div>
+
+    @if (meta().pages > 1) {
+      <nav class="d-flex justify-content-center mt-4">
+        <ul class="pagination mb-0">
+          @for (page of pages(); track page) {
+            <li class="page-item" [class.active]="page === meta().page">
+              <button class="page-link" type="button" (click)="load(page)">{{ page }}</button>
+            </li>
+          }
+        </ul>
+      </nav>
+    }
+  }
+</div>

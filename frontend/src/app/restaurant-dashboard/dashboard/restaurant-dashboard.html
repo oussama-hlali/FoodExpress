@@ -1,0 +1,122 @@
+@if (loading()) {
+  <div class="card-soft p-4 placeholder-glow">
+    <span class="placeholder col-12 mb-3" style="height: 80px; border-radius: 12px"></span>
+    <span class="placeholder col-12" style="height: 160px; border-radius: 12px"></span>
+  </div>
+} @else if (stats(); as data) {
+  <div class="row g-3 mb-4">
+    <div class="col-sm-6 col-xl-3">
+      <div class="card-soft stat-card">
+        <span class="stat-icon"><i class="bi bi-receipt"></i></span>
+        <div>
+          <div class="stat-value">{{ data.totalOrders }}</div>
+          <div class="stat-label">Commandes totales</div>
+        </div>
+      </div>
+    </div>
+    <div class="col-sm-6 col-xl-3">
+      <div class="card-soft stat-card">
+        <span class="stat-icon" style="background: var(--amber-soft); color: var(--amber)">
+          <i class="bi bi-hourglass-split"></i>
+        </span>
+        <div>
+          <div class="stat-value">{{ data.pendingOrders }}</div>
+          <div class="stat-label">En attente</div>
+        </div>
+      </div>
+    </div>
+    <div class="col-sm-6 col-xl-3">
+      <div class="card-soft stat-card">
+        <span class="stat-icon" style="background: var(--blue-soft); color: var(--blue)">
+          <i class="bi bi-check2-circle"></i>
+        </span>
+        <div>
+          <div class="stat-value">{{ data.acceptedOrders }}</div>
+          <div class="stat-label">En cours de traitement</div>
+        </div>
+      </div>
+    </div>
+    <div class="col-sm-6 col-xl-3">
+      <div class="card-soft stat-card">
+        <span class="stat-icon" style="background: var(--green-soft); color: var(--green)">
+          <i class="bi bi-cash-stack"></i>
+        </span>
+        <div>
+          <div class="stat-value">{{ data.revenue | number: '1.2-2' }} DT</div>
+          <div class="stat-label">Chiffre d’affaires</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row g-4">
+    <div class="col-lg-6">
+      <div class="card-soft p-4 h-100">
+        <div class="panel-head">
+          <h2 class="h5 mb-0"><i class="bi bi-trophy me-2"></i>Plats les plus commandés</h2>
+        </div>
+
+        @if (data.topDishes.length) {
+          <div class="d-grid gap-3">
+            @for (dish of data.topDishes; track dish._id; let index = $index) {
+              <div class="d-flex align-items-center gap-3">
+                <span class="rank-badge">{{ index + 1 }}</span>
+                <div class="flex-grow-1">
+                  <div class="fw-semibold small">{{ dish._id }}</div>
+                  <div class="small text-muted-2">{{ dish.quantite }} unité(s) · {{ dish.revenu | number: '1.2-2' }} DT</div>
+                </div>
+                <div class="progress" style="width: 70px; height: 6px">
+                  <div
+                    class="progress-bar"
+                    style="background: var(--brand)"
+                    [style.width.%]="data.topDishes[0].quantite ? (dish.quantite * 100) / data.topDishes[0].quantite : 0"
+                  ></div>
+                </div>
+              </div>
+            }
+          </div>
+        } @else {
+          <div class="empty-state py-4">
+            <i class="bi bi-bar-chart"></i>
+            <p class="small mt-2 mb-0">Aucune vente enregistrée pour le moment.</p>
+          </div>
+        }
+      </div>
+    </div>
+
+    <div class="col-lg-6">
+      <div class="card-soft p-4 h-100">
+        <div class="panel-head">
+          <h2 class="h5 mb-0"><i class="bi bi-clock-history me-2"></i>Dernières commandes</h2>
+          <a routerLink="/restaurant/orders" class="small fw-bold text-brand">Tout voir</a>
+        </div>
+
+        @if (data.recentOrders.length) {
+          <div class="d-grid gap-3">
+            @for (order of data.recentOrders; track order._id) {
+              <div class="d-flex justify-content-between gap-2 border-bottom pb-2">
+                <div>
+                  <div class="small fw-semibold">
+                    #{{ order._id.slice(-6).toUpperCase() }} · {{ order.client?.prenom }} {{ order.client?.nom }}
+                  </div>
+                  <div class="small text-muted-2">
+                    {{ order.createdAt | date: 'dd/MM HH:mm' }} · {{ order.articles.length }} article(s)
+                  </div>
+                </div>
+                <div class="text-end">
+                  <span class="badge-soft badge-neutral">{{ labels[order.statut] }}</span>
+                  <div class="small fw-bold">{{ order.total | number: '1.2-2' }} DT</div>
+                </div>
+              </div>
+            }
+          </div>
+        } @else {
+          <div class="empty-state py-4">
+            <i class="bi bi-inbox"></i>
+            <p class="small mt-2 mb-0">Aucune commande reçue.</p>
+          </div>
+        }
+      </div>
+    </div>
+  </div>
+}

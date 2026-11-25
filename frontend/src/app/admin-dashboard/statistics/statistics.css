@@ -1,0 +1,11 @@
+.mini-stat {
+  padding: 0.75rem 0.5rem;
+}
+
+.mini-stat .label {
+  font-size: 0.72rem;
+}
+
+.mini-stat .value {
+  font-size: 1.25rem;
+}

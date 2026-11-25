@@ -1,0 +1,88 @@
+<div class="row g-4">
+  <div class="col-lg-7">
+    <div class="card-soft p-3 p-lg-4">
+      <div class="panel-head">
+        <div>
+          <h2 class="h5 mb-1">Catégories de cuisine</h2>
+          <p class="small text-muted-2 mb-0">
+            Elles alimentent les filtres de la page d’accueil et la recherche de restaurants.
+          </p>
+        </div>
+      </div>
+
+      @if (loading()) {
+        <div class="placeholder-glow">
+          <span class="placeholder col-12 mb-2" style="height: 46px; border-radius: 10px"></span>
+          <span class="placeholder col-12" style="height: 46px; border-radius: 10px"></span>
+        </div>
+      } @else if (!categories().length) {
+        <div class="empty-state">
+          <i class="bi bi-tags"></i>
+          <p class="mt-2 mb-0 fw-bold">Aucune catégorie de cuisine</p>
+        </div>
+      } @else {
+        <div class="admin-table-wrap">
+          <table class="table-clean">
+            <thead>
+              <tr>
+                <th>Nom</th>
+                <th>Description</th>
+                <th class="text-end">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (category of categories(); track category._id) {
+                <tr>
+                  @if (editingId() === category._id) {
+                    <td><input class="form-control form-control-sm" [(ngModel)]="editNom" /></td>
+                    <td><input class="form-control form-control-sm" [(ngModel)]="editDescription" /></td>
+                    <td class="text-end">
+                      <div class="d-flex gap-1 justify-content-end">
+                        <button class="btn btn-brand btn-sm" type="button" (click)="saveEdit(category)">OK</button>
+                        <button class="btn btn-ghost btn-sm" type="button" (click)="cancelEdit()">Annuler</button>
+                      </div>
+                    </td>
+                  } @else {
+                    <td class="fw-semibold">{{ category.nom }}</td>
+                    <td class="small text-muted-2">{{ category.description || '—' }}</td>
+                    <td class="text-end">
+                      <div class="d-flex gap-1 justify-content-end">
+                        <button class="btn btn-icon" type="button" (click)="startEdit(category)" aria-label="Modifier">
+                          <i class="bi bi-pencil"></i>
+                        </button>
+                        <button class="btn btn-icon" type="button" (click)="remove(category)" aria-label="Supprimer">
+                          <i class="bi bi-trash text-danger"></i>
+                        </button>
+                      </div>
+                    </td>
+                  }
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      }
+    </div>
+  </div>
+
+  <div class="col-lg-5">
+    <div class="card-soft p-3 p-lg-4">
+      <h2 class="h5 mb-3">Ajouter une catégorie</h2>
+      <div class="mb-3">
+        <label class="form-label" for="nom">Nom *</label>
+        <input id="nom" class="form-control" [(ngModel)]="nom" placeholder="Ex : Japonais" />
+      </div>
+      <div class="mb-3">
+        <label class="form-label" for="description">Description</label>
+        <textarea id="description" class="form-control" rows="2" [(ngModel)]="description"></textarea>
+      </div>
+      <button class="btn btn-brand w-100" type="button" (click)="create()" [disabled]="saving()">
+        <i class="bi bi-plus-lg me-1"></i> Ajouter la catégorie
+      </button>
+      <p class="small text-muted-2 mt-3 mb-0">
+        <i class="bi bi-info-circle me-1"></i>
+        Les catégories de plats (Entrées, Pizzas...) sont gérées par chaque restaurateur.
+      </p>
+    </div>
+  </div>
+</div>

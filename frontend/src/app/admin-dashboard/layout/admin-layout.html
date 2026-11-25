@@ -1,0 +1,37 @@
+<section class="container py-4 py-lg-5">
+  <div class="d-flex justify-content-between align-items-end flex-wrap gap-3 mb-4">
+    <div>
+      <span class="badge-soft mb-2"><i class="bi bi-shield-lock"></i> Administration</span>
+      <h1 class="section-title mb-1">Pilotage de la plateforme</h1>
+      <p class="section-subtitle mb-0">Utilisateurs, restaurants, catégories et statistiques globales.</p>
+    </div>
+  </div>
+
+  <div class="dash-shell">
+    <aside class="card-soft dash-sidebar">
+      <nav class="dash-nav">
+        <a routerLink="/admin/statistics" routerLinkActive="active">
+          <i class="bi bi-graph-up"></i> Statistiques
+        </a>
+        <a routerLink="/admin/users" routerLinkActive="active">
+          <i class="bi bi-people"></i> Utilisateurs
+        </a>
+        <a routerLink="/admin/restaurants" routerLinkActive="active">
+          <i class="bi bi-shop"></i> Restaurants
+        </a>
+        <a routerLink="/admin/categories" routerLinkActive="active">
+          <i class="bi bi-tags"></i> Catégories
+        </a>
+        <div class="divider"></div>
+        <a routerLink="/"><i class="bi bi-house"></i> Retour au site</a>
+        <button type="button" class="dash-logout" (click)="auth.logout()">
+          <i class="bi bi-box-arrow-right"></i> Se déconnecter
+        </button>
+      </nav>
+    </aside>
+
+    <div>
+      <router-outlet />
+    </div>
+  </div>
+</section>
