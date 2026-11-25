@@ -1,0 +1,10 @@
+.cart-thumb {
+  width: 52px;
+  height: 52px;
+  border-radius: 10px;
+  object-fit: cover;
+}
+
+.table-clean td {
+  vertical-align: middle;
+}

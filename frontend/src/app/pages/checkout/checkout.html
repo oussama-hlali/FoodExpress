@@ -1,0 +1,135 @@
+<section class="container py-5">
+  <nav class="small text-muted-2 mb-3">
+    <a routerLink="/cart" class="text-muted-2">Panier</a> <i class="bi bi-chevron-right mx-1"></i>
+    <span>Confirmation</span>
+  </nav>
+
+  <h1 class="section-title mb-1">Confirmer ma commande</h1>
+  <p class="section-subtitle">Renseignez vos coordonnées de livraison et choisissez le mode de paiement.</p>
+
+  @if (cart.isEmpty()) {
+    <div class="card-soft empty-state">
+      <i class="bi bi-bag-x"></i>
+      <p class="mt-3 mb-3 fw-bold">Votre panier est vide.</p>
+      <a routerLink="/restaurants" class="btn btn-brand btn-sm">Choisir un restaurant</a>
+    </div>
+  } @else {
+    <div class="row g-4">
+      <div class="col-lg-7">
+        <form class="card-soft p-3 p-md-4" [formGroup]="form" (ngSubmit)="submit()">
+          <h2 class="h5 mb-3"><i class="bi bi-geo-alt me-2"></i>Adresse de livraison</h2>
+
+          <div class="mb-3">
+            <label class="form-label" for="adresse">Adresse complète *</label>
+            <textarea
+              id="adresse"
+              class="form-control"
+              rows="2"
+              formControlName="adresseLivraison"
+              placeholder="Ex : Avenue Habib Bourguiba, Immeuble 12, Appartement 4, Tunis"
+              [class.is-invalid]="invalid('adresseLivraison')"
+            ></textarea>
+            @if (invalid('adresseLivraison')) {
+              <div class="invalid-feedback d-block">Une adresse complète est obligatoire (8 caractères minimum).</div>
+            }
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label" for="telephone">Téléphone *</label>
+            <input
+              id="telephone"
+              type="tel"
+              class="form-control"
+              formControlName="telephone"
+              placeholder="22123456"
+              [class.is-invalid]="invalid('telephone')"
+            />
+            @if (invalid('telephone')) {
+              <div class="invalid-feedback d-block">Numéro de téléphone invalide.</div>
+            }
+          </div>
+
+          <div class="mb-4">
+            <label class="form-label" for="remarque">Remarque (optionnel)</label>
+            <textarea
+              id="remarque"
+              class="form-control"
+              rows="2"
+              formControlName="remarque"
+              placeholder="Ex : Sans oignons, sonner à l’interphone..."
+            ></textarea>
+          </div>
+
+          <h2 class="h5 mb-3"><i class="bi bi-credit-card me-2"></i>Mode de paiement</h2>
+
+          <label class="payment-option" [class.selected]="form.controls.modePaiement.value === 'livraison'">
+            <input type="radio" formControlName="modePaiement" value="livraison" />
+            <span class="payment-icon"><i class="bi bi-cash-coin"></i></span>
+            <span>
+              <span class="d-block fw-bold">Paiement à la livraison</span>
+              <span class="small text-muted-2">Payez en espèces au livreur.</span>
+            </span>
+          </label>
+
+          <label class="payment-option mt-2" [class.selected]="form.controls.modePaiement.value === 'en_ligne'">
+            <input type="radio" formControlName="modePaiement" value="en_ligne" />
+            <span class="payment-icon"><i class="bi bi-phone"></i></span>
+            <span>
+              <span class="d-block fw-bold">Paiement en ligne</span>
+              <span class="small text-muted-2">Extension facultative (intégration prestataire à venir).</span>
+            </span>
+          </label>
+
+          @if (error()) {
+            <div class="alert alert-danger small mt-3 mb-0">{{ error() }}</div>
+          }
+
+          <button class="btn btn-brand w-100 mt-4" type="submit" [disabled]="submitting()">
+            @if (submitting()) {
+              <span class="spinner-border spinner-border-sm me-2"></span> Confirmation...
+            } @else {
+              <i class="bi bi-check2-circle me-1"></i> Confirmer la commande
+            }
+          </button>
+          <p class="small text-muted-2 text-center mt-2 mb-0">
+            Le montant total est recalculé et vérifié par le serveur.
+          </p>
+        </form>
+      </div>
+
+      <aside class="col-lg-5">
+        <div class="card-soft p-4">
+          <h2 class="h5 mb-3">Votre commande</h2>
+          <div class="small text-muted-2 mb-3">
+            <i class="bi bi-shop me-1"></i> {{ cart.cart().restaurantNom }}
+          </div>
+
+          <div class="d-grid gap-3">
+            @for (item of cart.items(); track item.plat) {
+              <div class="d-flex align-items-center gap-2">
+                <img class="checkout-thumb" [src]="item.image || '/images/hero.jpg'" [alt]="item.nom" />
+                <div class="flex-grow-1">
+                  <div class="small fw-semibold">{{ item.nom }}</div>
+                  <div class="small text-muted-2">Quantité : {{ item.quantite }}</div>
+                </div>
+                <span class="small fw-bold">{{ item.quantite * item.prixUnitaire | number: '1.2-2' }} DT</span>
+              </div>
+            }
+          </div>
+
+          <div class="divider"></div>
+
+          <div class="summary-row">
+            <span>Sous-total</span><span>{{ cart.sousTotal() | number: '1.2-2' }} DT</span>
+          </div>
+          <div class="summary-row">
+            <span>Livraison</span><span>{{ cart.fraisLivraison() | number: '1.2-2' }} DT</span>
+          </div>
+          <div class="summary-row total">
+            <span>Total à payer</span><span>{{ cart.total() | number: '1.2-2' }} DT</span>
+          </div>
+        </div>
+      </aside>
+    </div>
+  }
+</section>

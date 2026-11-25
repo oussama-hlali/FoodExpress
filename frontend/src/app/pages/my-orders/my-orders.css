@@ -1,0 +1,49 @@
+.order-card {
+  padding: 1.1rem 1.2rem;
+}
+
+.order-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+}
+
+.order-thumb {
+  width: 54px;
+  height: 54px;
+  border-radius: 12px;
+  object-fit: cover;
+}
+
+.order-foot {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+  border-top: 1px dashed var(--line);
+  padding-top: 0.8rem;
+  margin-top: 0.4rem;
+}
+
+.order-detail {
+  background: #fffaf5;
+  border-radius: 12px;
+  padding: 1rem;
+  margin-top: 0.9rem;
+}
+
+.pagination .page-link {
+  border: 1px solid var(--line);
+  color: var(--ink);
+  font-weight: 600;
+  margin: 0 2px;
+  border-radius: 10px;
+}
+
+.pagination .page-item.active .page-link {
+  background: var(--brand);
+  border-color: var(--brand);
+  color: #fff;
+}
