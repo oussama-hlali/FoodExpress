@@ -1,0 +1,18 @@
+@if (toastService.toasts().length) {
+  <div class="toast-stack">
+    @for (toast of toastService.toasts(); track toast.id) {
+      <div class="toast-item" [class.success]="toast.type === 'success'" [class.error]="toast.type === 'error'">
+        <i
+          class="bi"
+          [class.bi-check-circle-fill]="toast.type === 'success'"
+          [class.bi-exclamation-circle-fill]="toast.type === 'error'"
+          [class.bi-info-circle-fill]="toast.type === 'info'"
+        ></i>
+        <span>{{ toast.message }}</span>
+        <button type="button" (click)="toastService.dismiss(toast.id)" aria-label="Fermer">
+          <i class="bi bi-x-lg"></i>
+        </button>
+      </div>
+    }
+  </div>
+}
