@@ -1,0 +1,97 @@
+<section class="container py-5">
+  <h1 class="section-title mb-1">Mon profil</h1>
+  <p class="section-subtitle">Gérez vos informations personnelles et votre mot de passe.</p>
+
+  <div class="row g-4">
+    <div class="col-lg-4">
+      <div class="card-soft p-4 text-center">
+        <span class="avatar avatar-lg mx-auto mb-3">
+          {{ (auth.user()?.prenom?.charAt(0) ?? '') + (auth.user()?.nom?.charAt(0) ?? '') }}
+        </span>
+        <h2 class="h5 mb-1">{{ auth.user()?.prenom }} {{ auth.user()?.nom }}</h2>
+        <p class="small text-muted-2 mb-2">{{ auth.user()?.email }}</p>
+        <span class="badge-soft">{{ auth.user()?.role }}</span>
+
+        <div class="divider"></div>
+
+        <div class="text-start small d-grid gap-2">
+          <div><i class="bi bi-telephone me-2 text-muted-2"></i>{{ auth.user()?.telephone }}</div>
+          <div>
+            <i class="bi bi-calendar3 me-2 text-muted-2"></i>
+            Membre depuis {{ auth.user()?.createdAt | date: 'MMMM yyyy' }}
+          </div>
+        </div>
+
+        @if (auth.role() === 'client') {
+          <a routerLink="/my-orders" class="btn btn-ghost btn-sm w-100 mt-3">
+            <i class="bi bi-receipt me-1"></i> Mes anciennes commandes
+          </a>
+        }
+      </div>
+    </div>
+
+    <div class="col-lg-8">
+      <div class="card-soft p-4 mb-4">
+        <h2 class="h5 mb-3">Informations personnelles</h2>
+        <form [formGroup]="profileForm" (ngSubmit)="saveProfile()" novalidate>
+          <div class="row g-3">
+            <div class="col-sm-6">
+              <label class="form-label" for="prenom">Prénom</label>
+              <input id="prenom" class="form-control" formControlName="prenom" />
+            </div>
+            <div class="col-sm-6">
+              <label class="form-label" for="nom">Nom</label>
+              <input id="nom" class="form-control" formControlName="nom" />
+            </div>
+            <div class="col-sm-6">
+              <label class="form-label" for="email">Email (non modifiable)</label>
+              <input id="email" class="form-control" [value]="auth.user()?.email" disabled />
+            </div>
+            <div class="col-sm-6">
+              <label class="form-label" for="tel">Téléphone</label>
+              <input id="tel" class="form-control" formControlName="telephone" />
+              @if (profileForm.controls.telephone.touched && profileForm.controls.telephone.invalid) {
+                <div class="small text-danger mt-1">Numéro de téléphone invalide.</div>
+              }
+            </div>
+          </div>
+          <button class="btn btn-brand mt-4" type="submit" [disabled]="savingProfile()">
+            @if (savingProfile()) {
+              <span class="spinner-border spinner-border-sm me-2"></span> Enregistrement...
+            } @else {
+              Enregistrer les modifications
+            }
+          </button>
+        </form>
+      </div>
+
+      <div class="card-soft p-4">
+        <h2 class="h5 mb-3">Modifier mon mot de passe</h2>
+        <form [formGroup]="passwordForm" (ngSubmit)="savePassword()" novalidate>
+          <div class="row g-3">
+            <div class="col-12">
+              <label class="form-label" for="current">Mot de passe actuel</label>
+              <input id="current" type="password" class="form-control" formControlName="currentPassword" />
+            </div>
+            <div class="col-sm-6">
+              <label class="form-label" for="new">Nouveau mot de passe</label>
+              <input id="new" type="password" class="form-control" formControlName="newPassword" />
+              <div class="small text-muted-2 mt-1">8 caractères minimum, une lettre et un chiffre.</div>
+            </div>
+            <div class="col-sm-6">
+              <label class="form-label" for="confirm">Confirmation</label>
+              <input id="confirm" type="password" class="form-control" formControlName="confirmPassword" />
+            </div>
+          </div>
+          <button class="btn btn-ghost mt-4" type="submit" [disabled]="savingPassword()">
+            @if (savingPassword()) {
+              <span class="spinner-border spinner-border-sm me-2"></span> Modification...
+            } @else {
+              Modifier le mot de passe
+            }
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+</section>
