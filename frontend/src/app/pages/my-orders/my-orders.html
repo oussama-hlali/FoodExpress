@@ -1,0 +1,130 @@
+<section class="container py-5">
+  <div class="d-flex justify-content-between align-items-end flex-wrap gap-3 mb-4">
+    <div>
+      <h1 class="section-title mb-1">Mes commandes</h1>
+      <p class="section-subtitle mb-0">Suivez l’état de vos commandes et consultez votre historique.</p>
+    </div>
+    <select class="form-select w-auto" [(ngModel)]="statusFilter" (change)="filterChanged()" aria-label="Filtrer par statut">
+      <option value="">Tous les statuts</option>
+      @for (entry of statusLabels | keyvalue; track entry.key) {
+        <option [value]="entry.key">{{ entry.value }}</option>
+      }
+    </select>
+  </div>
+
+  @if (loading()) {
+    <div class="card-soft p-4 placeholder-glow">
+      <span class="placeholder col-12 mb-3" style="height: 60px; border-radius: 12px"></span>
+      <span class="placeholder col-12" style="height: 60px; border-radius: 12px"></span>
+    </div>
+  } @else if (!orders().length) {
+    <div class="card-soft empty-state">
+      <i class="bi bi-receipt"></i>
+      <p class="mt-3 mb-1 fw-bold">Aucune commande pour le moment</p>
+      <p class="small mb-3">Vos commandes apparaîtront ici dès que vous aurez commandé.</p>
+      <a routerLink="/restaurants" class="btn btn-brand btn-sm">Commander maintenant</a>
+    </div>
+  } @else {
+    <div class="d-grid gap-3">
+      @for (order of orders(); track order._id) {
+        <article class="card-soft order-card">
+          <div class="order-head">
+            <div class="d-flex align-items-center gap-3">
+              <img class="order-thumb" [src]="order.restaurant?.image || '/images/hero.jpg'" [alt]="order.restaurant?.nom" />
+              <div>
+                <h2 class="h6 mb-1">{{ order.restaurant?.nom }}</h2>
+                <div class="small text-muted-2">
+                  Commande n° {{ order._id.slice(-6).toUpperCase() }} ·
+                  {{ order.createdAt | date: 'dd/MM/yyyy à HH:mm' }}
+                </div>
+              </div>
+            </div>
+            <div class="text-end">
+              <span class="badge-soft" [class]="statusClass(order.statut)">{{ statusLabels[order.statut] }}</span>
+              <div class="fw-bold mt-1">{{ order.total | number: '1.2-2' }} DT</div>
+            </div>
+          </div>
+
+          @if (order.statut !== 'refusee' && order.statut !== 'annulee') {
+            <div class="order-steps">
+              @for (step of steps; track step) {
+                <div class="order-step" [class.done]="isStepDone(order, step)">{{ statusLabels[step] }}</div>
+              }
+            </div>
+          } @else {
+            <div class="alert alert-danger small my-2 py-2">
+              Commande {{ statusLabels[order.statut] | lowercase }}.
+              @if (order.motifRefus) {
+                Motif : {{ order.motifRefus }}
+              }
+            </div>
+          }
+
+          <div class="order-foot">
+            <span class="small text-muted-2">
+              {{ itemCount(order) }} article(s) · Livraison {{ order.fraisLivraison | number: '1.2-2' }} DT
+            </span>
+            <div class="d-flex gap-2">
+              <button class="btn btn-ghost btn-sm" type="button" (click)="toggle(order._id)">
+                {{ expanded() === order._id ? 'Masquer le détail' : 'Voir le détail' }}
+              </button>
+              @if (order.statut === 'en_attente') {
+                <button class="btn btn-outline-danger btn-sm rounded-pill" type="button" (click)="cancelOrder(order)">
+                  Annuler
+                </button>
+              }
+            </div>
+          </div>
+
+          @if (expanded() === order._id) {
+            <div class="order-detail">
+              <div class="row g-4">
+                <div class="col-md-7">
+                  <h3 class="h6 mb-2">Articles</h3>
+                  <div class="d-grid gap-2">
+                    @for (item of order.articles; track item.plat) {
+                      <div class="d-flex justify-content-between align-items-center border-bottom pb-2">
+                        <span class="small">
+                          {{ item.quantite }} × {{ item.nom }}
+                          <span class="text-muted-2">({{ item.prixUnitaire | number: '1.2-2' }} DT)</span>
+                        </span>
+                        <span class="small fw-bold">{{ item.quantite * item.prixUnitaire | number: '1.2-2' }} DT</span>
+                      </div>
+                    }
+                  </div>
+                </div>
+                <div class="col-md-5">
+                  <h3 class="h6 mb-2">Livraison</h3>
+                  <p class="small mb-1"><i class="bi bi-geo-alt me-1"></i>{{ order.adresseLivraison }}</p>
+                  <p class="small mb-1"><i class="bi bi-telephone me-1"></i>{{ order.telephone }}</p>
+                  <p class="small mb-1">
+                    <i class="bi bi-credit-card me-1"></i>
+                    {{ order.modePaiement === 'livraison' ? 'Paiement à la livraison' : 'Paiement en ligne' }}
+                  </p>
+                  @if (order.remarque) {
+                    <p class="small mb-1"><i class="bi bi-chat-left-text me-1"></i>{{ order.remarque }}</p>
+                  }
+                  <div class="summary-row mt-2"><span>Sous-total</span><span>{{ order.sousTotal | number: '1.2-2' }} DT</span></div>
+                  <div class="summary-row"><span>Livraison</span><span>{{ order.fraisLivraison | number: '1.2-2' }} DT</span></div>
+                  <div class="summary-row total"><span>Total</span><span>{{ order.total | number: '1.2-2' }} DT</span></div>
+                </div>
+              </div>
+            </div>
+          }
+        </article>
+      }
+    </div>
+
+    @if (meta().pages > 1) {
+      <nav class="d-flex justify-content-center mt-4">
+        <ul class="pagination mb-0">
+          @for (page of pages(); track page) {
+            <li class="page-item" [class.active]="page === meta().page">
+              <button class="page-link" type="button" (click)="load(page)">{{ page }}</button>
+            </li>
+          }
+        </ul>
+      </nav>
+    }
+  }
+</section>
