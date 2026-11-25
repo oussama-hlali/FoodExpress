@@ -1,0 +1,57 @@
+<footer class="footer">
+  <div class="container">
+    <div class="row g-4 py-5">
+      <div class="col-lg-4">
+        <div class="d-flex align-items-center gap-2 mb-3">
+          <span class="brand-mark"><i class="bi bi-bag-heart-fill"></i></span>
+          <span class="brand-text">Food<span>Express</span></span>
+        </div>
+        <p class="small footer-text mb-3">
+          La plateforme qui met en relation les gourmands et les meilleurs restaurants partenaires.
+          Commandez en quelques clics, suivez votre livraison en temps réel.
+        </p>
+        <div class="d-flex gap-2">
+          <span class="social"><i class="bi bi-facebook"></i></span>
+          <span class="social"><i class="bi bi-instagram"></i></span>
+          <span class="social"><i class="bi bi-twitter-x"></i></span>
+        </div>
+      </div>
+
+      <div class="col-6 col-lg-2">
+        <h6 class="footer-title">Découvrir</h6>
+        <ul class="list-unstyled small d-grid gap-2">
+          <li><a routerLink="/restaurants">Tous les restaurants</a></li>
+          <li><a routerLink="/restaurants" [queryParams]="{ open: 'true' }">Ouverts maintenant</a></li>
+          <li><a routerLink="/cart">Mon panier</a></li>
+          @if (auth.isLoggedIn()) {
+            <li><a routerLink="/my-orders">Mes commandes</a></li>
+          }
+        </ul>
+      </div>
+
+      <div class="col-6 col-lg-2">
+        <h6 class="footer-title">Espace pro</h6>
+        <ul class="list-unstyled small d-grid gap-2">
+          <li><a routerLink="/register">Devenir partenaire</a></li>
+          <li><a routerLink="/login">Espace restaurateur</a></li>
+          <li><a routerLink="/login">Administration</a></li>
+        </ul>
+      </div>
+
+      <div class="col-lg-4">
+        <h6 class="footer-title">Contact</h6>
+        <ul class="list-unstyled small d-grid gap-2 footer-text">
+          <li><i class="bi bi-geo-alt me-2"></i>Avenue Habib Bourguiba, Tunis</li>
+          <li><i class="bi bi-telephone me-2"></i>+216 71 000 000</li>
+          <li><i class="bi bi-envelope me-2"></i>contact&#64;foodexpress.tn</li>
+          <li><i class="bi bi-clock me-2"></i>Tous les jours de 9h à 23h</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="footer-bottom d-flex flex-column flex-sm-row justify-content-between gap-2 py-3 small">
+      <span>© {{ year }} FoodExpress. Tous droits réservés.</span>
+      <span>Projet MEAN Stack — Souissi Nour El Houda</span>
+    </div>
+  </div>
+</footer>

@@ -1,0 +1,89 @@
+<header class="navbar-shell">
+  <div class="container">
+    <nav class="navbar navbar-expand-lg py-3">
+      <a class="navbar-brand d-flex align-items-center gap-2" routerLink="/" (click)="closeAll()">
+        <span class="brand-mark"><i class="bi bi-bag-heart-fill"></i></span>
+        <span class="brand-text">Food<span>Express</span></span>
+      </a>
+
+      <div class="d-flex align-items-center gap-2 order-lg-3">
+        @if (auth.role() === 'client' || !auth.isLoggedIn()) {
+          <a class="cart-btn" routerLink="/cart" aria-label="Mon panier">
+            <i class="bi bi-bag"></i>
+            @if (cart.count() > 0) {
+              <span class="cart-badge">{{ cart.count() }}</span>
+            }
+          </a>
+        }
+
+        @if (auth.isLoggedIn()) {
+          <div class="user-menu">
+            <button class="user-trigger" type="button" (click)="toggleMenu($event)">
+              <span class="avatar">{{ initials() }}</span>
+              <span class="d-none d-lg-inline user-name">{{ auth.user()?.prenom }}</span>
+              <i class="bi bi-chevron-down small d-none d-lg-inline"></i>
+            </button>
+
+            @if (menuOpen()) {
+              <div class="menu-backdrop" (click)="menuOpen.set(false)"></div>
+              <div class="user-dropdown">
+                <div class="px-3 py-2">
+                  <div class="fw-bold">{{ auth.user()?.prenom }} {{ auth.user()?.nom }}</div>
+                  <div class="small text-muted-2">{{ auth.user()?.email }}</div>
+                  <span class="badge-soft mt-2">{{ auth.user()?.role }}</span>
+                </div>
+                <div class="divider my-1"></div>
+                @if (auth.role() === 'client') {
+                  <a routerLink="/profile" (click)="closeAll()"><i class="bi bi-person"></i> Mon profil</a>
+                  <a routerLink="/my-orders" (click)="closeAll()"><i class="bi bi-receipt"></i> Mes commandes</a>
+                }
+                @if (auth.role() === 'restaurateur') {
+                  <a routerLink="/restaurant" (click)="closeAll()"><i class="bi bi-shop"></i> Espace restaurateur</a>
+                }
+                @if (auth.role() === 'admin') {
+                  <a routerLink="/admin" (click)="closeAll()"><i class="bi bi-sliders"></i> Administration</a>
+                }
+                <button type="button" class="dropdown-logout" (click)="logout()">
+                  <i class="bi bi-box-arrow-right"></i> Se déconnecter
+                </button>
+              </div>
+            }
+          </div>
+        } @else {
+          <a class="btn btn-ghost btn-sm px-3 d-none d-sm-inline-flex" routerLink="/login">Connexion</a>
+          <a class="btn btn-brand btn-sm px-3" routerLink="/register">S’inscrire</a>
+        }
+
+        <button class="btn btn-icon d-lg-none" type="button" (click)="mobileOpen.set(!mobileOpen())" aria-label="Menu">
+          <i class="bi" [class.bi-list]="!mobileOpen()" [class.bi-x-lg]="mobileOpen()"></i>
+        </button>
+      </div>
+
+      <div class="collapse navbar-collapse order-lg-2" [class.show]="mobileOpen()">
+        <ul class="navbar-nav mx-lg-auto gap-lg-2 mt-3 mt-lg-0">
+          <li class="nav-item">
+            <a class="nav-link" routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" (click)="closeAll()">Accueil</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" routerLink="/restaurants" routerLinkActive="active" (click)="closeAll()">Restaurants</a>
+          </li>
+          @if (auth.role() === 'client') {
+            <li class="nav-item">
+              <a class="nav-link" routerLink="/my-orders" routerLinkActive="active" (click)="closeAll()">Mes commandes</a>
+            </li>
+          }
+          @if (auth.role() === 'restaurateur') {
+            <li class="nav-item">
+              <a class="nav-link" routerLink="/restaurant" routerLinkActive="active" (click)="closeAll()">Mon restaurant</a>
+            </li>
+          }
+          @if (auth.role() === 'admin') {
+            <li class="nav-item">
+              <a class="nav-link" routerLink="/admin" routerLinkActive="active" (click)="closeAll()">Administration</a>
+            </li>
+          }
+        </ul>
+      </div>
+    </nav>
+  </div>
+</header>
